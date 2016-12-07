@@ -15,28 +15,27 @@ public class Buffer {
     }
 
     synchronized void get(int id,Circle circle) {
-        if(circle.getFull()) return;
+        if(circle.isFull()) return;
         gui.addToTextArea("Konsument #" + id + " chce zabrac");
         while (empty) {
             try {
                 gui.addToTextArea("Konsument #" + id + "   bufor pusty - czekam");
                 wait();
-            } catch (InterruptedException ignored) {
-            }
+            } catch (InterruptedException ignored) {}
         }
-        if (circle.isInsideBuffer()&&!empty) {
+        if (circle.isInsideBuffer()&&volume-circle.volume>=0) {
             volume -= circle.volume;
             circle.setFull();
             rW = Math.sqrt(volume / Math.PI);
-            full = rW == rZ||volume+circle.volume>=volumeMax;
-            empty = rW==0;
+            full = rW >= rZ||volume+circle.volume>=volumeMax;
+            empty = rW<=0||volume-circle.volume<0;
         }
 
         notifyAll();
     }
 
     synchronized void put(int id,Circle circle) {
-        if(!circle.getFull()) return;
+        if(!circle.isFull()) return;
         gui.addToTextArea("Producent #" + id + "  chce oddac");
 
         while (full) {
@@ -45,16 +44,14 @@ public class Buffer {
                 wait();
             } catch (InterruptedException ignored) {}
         }
-        if (circle.isInsideBuffer()){
+        if (circle.isInsideBuffer()&&volume+circle.volume<=volumeMax){
             volume+=circle.volume;
             rW=Math.sqrt(volume/Math.PI);
             gui.addToTextArea("Producent #" + id + "       oddal");
             circle.setFull();
-            full = rW == rZ||volume+circle.volume>=volumeMax;
-            empty = rW==0;
+            full = rW >= rZ||volume+circle.volume>=volumeMax;
+            empty = rW<=0||volume-circle.volume<0;
         }
-
-
         notifyAll();
     }
 

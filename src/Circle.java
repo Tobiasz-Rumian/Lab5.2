@@ -52,11 +52,11 @@ abstract class Circle extends Thread{
 
 
     boolean isOutsideBuffer(){
-        return (int)Math.hypot(buffer.getPoint(true)-x, buffer.getPoint(false)-y)>=(int)(r+buffer.getRadius());
+        return (Math.sqrt(Math.pow(buffer.getPoint(true)-x,2)+Math.pow(buffer.getPoint(false)-y,2)))>=(r+buffer.getRadius());
     }
 
     boolean isInsideBuffer(){
-        return (int)Math.hypot(buffer.getPoint(true)-x, buffer.getPoint(false)-y)<(int)(r+r+buffer.getRadius());
+        return (Math.sqrt(Math.pow(buffer.getPoint(true)-x,2)+Math.pow(buffer.getPoint(false)-y,2)))<buffer.getRadius()-r;
     }
     void sleepWell(int time) {
         try {
@@ -80,7 +80,7 @@ abstract class Circle extends Thread{
     boolean isTouchingWall(){
         return x <= 0 || x >= gR.getFrameSize().getWidth() || y <= 0 || y >= gR.getFrameSize().getHeight();
     }
-    boolean getFull(){
+    boolean isFull(){
         return full;
     }
 
