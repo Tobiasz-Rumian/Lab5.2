@@ -2,13 +2,13 @@ import java.awt.*;
 
 
 public class Buffer {
-    private boolean full = false,empty=true;
+    private volatile boolean full = false,empty=true;
     private Gui gui = null;
-    private double x,y,rZ=50,rW=25;
+    private volatile double x,y,rZ=50,rW=0;
     private Color colorInside = Color.red;
     private Color colorOutside = Color.black;
-    private double volume=Math.PI*Math.pow(rW,2);
-    private double volumeMax=Math.PI*Math.pow(rZ,2);
+    private volatile double volume=Math.PI*Math.pow(rW,2);
+    private volatile double volumeMax=Math.PI*Math.pow(rZ,2);
 
     Buffer(Gui gui) {
         this.gui = gui;
@@ -16,7 +16,7 @@ public class Buffer {
 
     synchronized void get(int id,Circle circle) {
         if(circle.isFull()) return;
-        gui.addToTextArea("Konsument #" + id + " chce zabrac");
+
         while (empty) {
             try {
                 gui.addToTextArea("Konsument #" + id + "   bufor pusty - czekam");
@@ -24,6 +24,7 @@ public class Buffer {
             } catch (InterruptedException ignored) {}
         }
         if (circle.isInsideBuffer()&&volume-circle.volume>=0) {
+            gui.addToTextArea("Konsument #" + id + " chce zabrac");
             volume -= circle.volume;
             circle.setFull();
             rW = Math.sqrt(volume / Math.PI);
@@ -36,8 +37,6 @@ public class Buffer {
 
     synchronized void put(int id,Circle circle) {
         if(!circle.isFull()) return;
-        gui.addToTextArea("Producent #" + id + "  chce oddac");
-
         while (full) {
             try {
                 gui.addToTextArea("Producent #" + id + "   bufor zajety - czekam");
@@ -45,6 +44,7 @@ public class Buffer {
             } catch (InterruptedException ignored) {}
         }
         if (circle.isInsideBuffer()&&volume+circle.volume<=volumeMax){
+            gui.addToTextArea("Producent #" + id + "  chce oddac");
             volume+=circle.volume;
             rW=Math.sqrt(volume/Math.PI);
             gui.addToTextArea("Producent #" + id + "       oddal");
@@ -57,7 +57,7 @@ public class Buffer {
 
     public void refreshCoordinates(){
         this.x=Gui.getFrameSize().getWidth()/2;
-        this.y=((Gui.getFrameSize().getHeight()-(Gui.getFrameSize().getHeight() * 0.25))/2)-10;//TODO zdobyć rozmiar Jmenu
+        this.y=((Gui.getFrameSize().getHeight()-(Gui.getFrameSize().getHeight() * 0.25)-gui.getJmenuSize().getHeight())/2);
     }
 
     void draw(Graphics g) {

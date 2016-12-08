@@ -21,7 +21,7 @@ public class Gui extends JFrame {
     private static Dimension frameSize = new Dimension(800, 700);
 
     private Gui() {
-        super("Tobiasz Rumian Laboratorium 5.1");
+        super("Tobiasz Rumian Laboratorium 5.2");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(frameSize);
         buttonStop.setEnabled(false);
@@ -68,7 +68,9 @@ public class Gui extends JFrame {
             textArea.setText("");
             graphicRepresentation.kill();
             graphicRepresentation = new GraphicRepresentation(this);
-            System.gc();
+            graphicRepresentation.setVisible(true);
+            graphicRepresentation.setPreferredSize(new Dimension((int) frameSize.getWidth(), (int) (frameSize.getWidth() * 0.75)));
+            graphicRepresentation.setBackground(Color.blue);
         });
         buttonFreeze.addActionListener(actionEvent -> {
             graphicRepresentation.freeze();
@@ -116,33 +118,27 @@ public class Gui extends JFrame {
     private void setComponentsSize(ComponentEvent e) {
         frameSize = e.getComponent().getBounds().getSize();
         graphicRepresentation.setPreferredSize(new Dimension((int) frameSize.getWidth(), (int) ((frameSize.getWidth()-menuBar.getHeight()) * 0.75)));
-        graphicRepresentation.setSize(new Dimension((int) frameSize.getWidth(), (int) ((frameSize.getWidth()-menuBar.getHeight()) * 0.75)));
-        graphicRepresentation.setMinimumSize(new Dimension((int) frameSize.getWidth(), (int) ((frameSize.getWidth()-menuBar.getHeight()) * 0.75)));
-        graphicRepresentation.setMaximumSize(new Dimension((int) frameSize.getWidth(), (int) ((frameSize.getWidth()-menuBar.getHeight()) * 0.75)));
+        //graphicRepresentation.setSize(new Dimension((int) frameSize.getWidth(), (int) ((frameSize.getWidth()-menuBar.getHeight()) * 0.75)));
+        graphicRepresentation.setMinimumSize(null);
+        graphicRepresentation.setMaximumSize(null);
         scrollPane.setPreferredSize(new Dimension((int) frameSize.getWidth() - 20, (int) ((frameSize.getWidth()-menuBar.getHeight()) * 0.25)));
         graphicRepresentation.refreshCoordinates();
-    //TODO: Sprawdzić dlaczego trzyma się wyznaczonej proporcji
+    //TODO: Sprawdzić dlaczego trzyma się wyznaczonej proporcji.
+    }
+    public Dimension getJmenuSize(){
+        return menuBar.getSize();
     }
 
-
     class CustomComponentListener implements ComponentListener {
-
         public void componentResized(ComponentEvent e) {
             setComponentsSize(e);
         }
-
-        public void componentMoved(ComponentEvent e) {
-        }
-
-        public void componentShown(ComponentEvent e) {
-        }
-
-        public void componentHidden(ComponentEvent e) {
-        }
+        public void componentMoved(ComponentEvent e) {}
+        public void componentShown(ComponentEvent e) {}
+        public void componentHidden(ComponentEvent e) {}
     }
 
     class CustomWindowStateListener implements WindowStateListener {
-
         @Override
         public void windowStateChanged(WindowEvent e) {
             setComponentsSize(e);

@@ -14,7 +14,10 @@ public class GraphicRepresentation extends JPanel {
     private Dimension frameSize;
     GraphicRepresentation(Gui gui) {
         buffer = new Buffer(gui);
+        buffer.refreshCoordinates();
         this.addComponentListener(new CustomComponentListener());
+        frameSize = this.getSize();
+        repaint();
     }
 
     @Override
@@ -40,15 +43,9 @@ public class GraphicRepresentation extends JPanel {
             buyer.setDefaultColor(Color.yellow);
             buyers.add(buyer);
         }
-        for (Producer p : producers) p.start();
-        for (Buyer k : buyers) k.start();
+        producers.forEach(Thread::start);
+        buyers.forEach(Thread::start);
         repaint();
-    }
-    void exit() {
-        for (Producer p : producers) p.kill();
-        for (Buyer k : buyers) k.kill();
-        producers.clear();
-        buyers.clear();
     }
 
     void freeze() {
@@ -58,8 +55,10 @@ public class GraphicRepresentation extends JPanel {
     }
 
     void kill() {
-        buyers.clear();
-        producers.clear();
+        producers.forEach(Circle::kill);
+        buyers.forEach(Circle::kill);
+        buyers=new ArrayList<>();
+        producers=new ArrayList<>();
         repaint();
     }
     public void refreshCoordinates(){

@@ -13,7 +13,7 @@ class Producer extends Circle {
             if(!isOutsideBuffer()) buffer.put(id,this);
             move();
             gR.repaint();
-            sleepWell(10);
+            sleepWell(50);
         }
     }
 }//TODO: Sprawić aby wątki się kończyły

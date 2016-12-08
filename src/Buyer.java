@@ -12,7 +12,7 @@ public class Buyer extends Circle {
             move();
             gR.repaint();
             if(!isOutsideBuffer()) buffer.get(id,this);
-            sleepWell(10);
+            sleepWell(50);
         }
     }
 }//TODO: Sprawić aby wątki się kończyły
