@@ -1,3 +1,14 @@
+/*
+ *  Klasa GraphicRepresentation
+ *
+ *  Klasa zajmuje się graficzną reprezentacją wątków.
+ *
+ *  @author Tobiasz Rumian
+ *  @version 1.1
+ *   Data: 08 Grudzień 2016 r.
+ *   Indeks: 226131
+ *   Grupa: śr 13:15 TN
+ */
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
@@ -8,11 +19,14 @@ import java.util.Random;
 public class GraphicRepresentation extends JPanel {
     private ArrayList<Producer> producers = new ArrayList<>();
     private ArrayList<Buyer> buyers = new ArrayList<>();
-    private Random random= new Random();
+    private Random random = new Random();
     private boolean currentFreezeState = false;
     private static Buffer buffer = null;
     private Dimension frameSize;
+    private Gui gui = null;
+
     GraphicRepresentation(Gui gui) {
+        this.gui = gui;
         buffer = new Buffer(gui);
         buffer.refreshCoordinates();
         this.addComponentListener(new CustomComponentListener());
@@ -34,12 +48,12 @@ public class GraphicRepresentation extends JPanel {
     void createFigures() {
 
         for (int i = 0; i < Gui.getHowManyProducers(); i++) {
-            Producer producer = new Producer(buffer,this,i,random.nextInt((int)Gui.getFrameSize().getWidth()),random.nextInt((int)Gui.getFrameSize().getHeight()));
+            Producer producer = new Producer(buffer, this, i, random.nextInt(this.getWidth()), random.nextInt(this.getHeight()));
             producer.setDefaultColor(Color.green);
             producers.add(producer);
         }
         for (int i = 0; i < Gui.getHowManyBuyers(); i++) {
-            Buyer buyer = new Buyer(buffer,this,i,random.nextInt((int)Gui.getFrameSize().getWidth()),random.nextInt((int)Gui.getFrameSize().getHeight()));
+            Buyer buyer = new Buyer(buffer, this, i, random.nextInt(this.getWidth()), random.nextInt(this.getHeight()));
             buyer.setDefaultColor(Color.yellow);
             buyers.add(buyer);
         }
@@ -55,15 +69,21 @@ public class GraphicRepresentation extends JPanel {
     }
 
     void kill() {
-        producers.forEach(Circle::kill);
-        buyers.forEach(Circle::kill);
-        buyers=new ArrayList<>();
-        producers=new ArrayList<>();
+        for (Circle c:producers) {
+            c.kill();
+        }
+        for (Circle c:buyers) {
+            c.kill();
+        }
+        buyers = new ArrayList<>();
+        producers = new ArrayList<>();
         repaint();
     }
-    public void refreshCoordinates(){
+
+    void refreshCoordinates() {
         buffer.refreshCoordinates();
     }
+
     class CustomComponentListener implements ComponentListener {
 
         public void componentResized(ComponentEvent e) {
@@ -79,8 +99,13 @@ public class GraphicRepresentation extends JPanel {
         public void componentHidden(ComponentEvent e) {
         }
     }
-    public Dimension getFrameSize(){
+
+    Dimension getFrameSize() {
         return frameSize;
+    }
+
+    Gui getGui() {
+        return gui;
     }
 }
 
